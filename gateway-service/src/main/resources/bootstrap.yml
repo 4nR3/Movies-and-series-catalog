@@ -1,0 +1,70 @@
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+#
+#spring:
+#  application:
+#    name: gateway-service
+#  cloud:
+#    config:
+#      discovery:
+#        enable: true
+#        service-id: config-service
+#    gateway:
+#      default-filters:
+#        - name: CountFilter
+#      routes:
+#        - id: catalogRoute
+#          uri: http://localhost:8082/
+#          predicates:
+#            - Path=/catalog/**
+#        - id: movieRoute
+#          uri: http://localhost:8083/
+#          predicates:
+#            - Path=/movies/**
+#        - id: serieRoute
+#          uri: http://localhost:8084/
+#          predicates:
+#            - Path=/series/**
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  eureka:
+    client:
+      service-url:
+        defaultZone: http://localhost:8761/eureka
+  cloud:
+    gateway:
+      routes:
+        - id: catalogRoute
+          uri: http://localhost:8082/
+          predicates:
+            - Path=/catalog/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: catalogService
+                fallbackUri: http://localhost:8080/fallback/catalog
+        - id: movieRoute
+          uri: http://localhost:8083/
+          predicates:
+            - Path=/movies/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: moviesService
+                fallbackUri: http://localhost:8080/fallback/movies
+        - id: seriesRoute
+          uri: http://localhost:8084/
+          predicates:
+            - Path=/series/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: seriesService
+                fallbackUri: http://localhost:8080/fallback/series
