@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: movie-service
+  config:
+    import:
+      configserver: http://localhost:8888
+
+server:
+  port: 8083
+
+queue:
+  movie:
+    name: movie
